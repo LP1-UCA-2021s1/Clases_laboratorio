@@ -3,6 +3,8 @@
 #include <string.h>
 #include "declarations.h"
 
+#define CANT_VAL_1D 10
+
 /**
  * lectura de entrada:
  * 	- muestra opciones de entrada de datos
@@ -103,9 +105,54 @@ int calcularResultado(char operadores[CANT_MAX_OPERADORES], int operandos[CANT_M
  */
 void imprimirResultados(int resultado){
 	if(resultado <= 10)
-		printf("El resultado es (en romanos): %s\n", obtenerRomano(resultado));
+		printf("El resultado es %d y en romanos %s\n", resultado, obtenerRomano(resultado));
 	else
 		printf("El resultado es: %d\n", resultado);
+}
+
+void mostrarTrivia(int resultado){
+	int cantdig[10];
+	// pedir datos al usuario
+	char respuestaUsuario;
+	printf("Cual es el valor que aparece mas veces?");
+	int lecturaCorrecta = scanf("%[0-9]c", &respuestaUsuario);
+	limpiarBuffer();
+
+	if(lecturaCorrecta){
+		char stringResultado[MAX_CARACTERES];
+		char c;
+		int i;
+
+		// comparar con el valor que aparece mas veces
+		sprintf(stringResultado, "%d", resultado);
+		// ceramos el array
+		for(i=0;i<10;i++){
+			*(cantdig+i) = 0; // cantdig[i]=0
+		}
+
+
+		for(i=0; c = *(stringResultado+i); i++){
+			int digito = c - '0';
+			*(cantdig + digito) += 1;
+		}
+
+		int mayor = *cantdig;
+		int indMayor = 0;
+		for(i=1;i<10;i++){
+			if(*(cantdig+i) > mayor){
+				mayor = *(cantdig+i);
+				indMayor = i;
+			}
+		}
+
+		// imprimir respuesta final: lo ingresado es correcto o no
+		int valorUsuario = respuestaUsuario-'0';
+		if(valorUsuario == indMayor)
+			printf("\nEs correcto. El valor %d aparece %d veces.\n\n", indMayor, mayor);
+		else
+			printf("\nEs incorrecto. El valor %d aparece %d veces. El mayor es %d y aparece %d veces.\n\n", valorUsuario, *(cantdig+valorUsuario), indMayor, mayor);
+	}
+
 }
 
 
@@ -120,6 +167,7 @@ int main(void) {
 		// se procesa expresion para obtener operadores y operandos
 		procesarExpresion(expresion, operadores, operandos);
 		int resultado = calcularResultado(operadores, operandos);
+		mostrarTrivia(resultado);
 		imprimirResultados(resultado);
 	}
 }
